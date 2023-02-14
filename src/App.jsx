@@ -6,6 +6,7 @@ import contractABI from './contract-ABI.json';
 import { mainnet } from 'wagmi/chains';
 import Web3 from 'web3';
 import './App.css';
+import { useState } from 'react';
 
 
 const projectId = "4c21ad73dbf007a0b79ea1af1df300ca";
@@ -31,13 +32,16 @@ export default function App() {
 
   const { address, isConnected, isDisconnected } = useAccount();
 
+  const [tokenBalance, setTokenBalance] = useState(0)
+
   async function getBalance() {
     try {
       await window.web3.currentProvider.enable();
       const web3 = new Web3(window.web3.currentProvider);
-      let contract = await new web3.eth.Contract(contractABI, contractAddress);
-      let tokenBalance = await contract.methods.balanceOf(address).call();
-      console.log(`This account have ${tokenBalance} NFTs`);
+      const contract = await new web3.eth.Contract(contractABI, contractAddress);
+      let userBalance = await contract.methods.balanceOf(address).call();
+      console.log(`This account have ${userBalance} NFTs`);
+      setTokenBalance(userBalance)
     } catch (error) {
       console.log(error);
     }
@@ -63,7 +67,12 @@ export default function App() {
 
       <Web3Modal projectId={projectId} ethereumClient={ethereumClient} />
       {
-        isConnected && <h2>{address}</h2>
+        isConnected && (
+          <div>
+            <h2>{address}</h2>
+            <h1>This account have {tokenBalance} NFTs</h1>
+          </div>
+        )
       }
     </div>
   )
