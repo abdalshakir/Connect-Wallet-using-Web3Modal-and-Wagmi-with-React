@@ -1,0 +1,17 @@
+.App {
+  height: 50rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #F7F7F7;
+}
+
+.wallet-btn {
+  font-size: 1.5rem;
+  padding: 10px 30px;
+  color: #000;
+  background-color: #0EF;
+  border: 1px solid #000;
+  border-radius: 5px;
+  cursor: pointer;
+}
