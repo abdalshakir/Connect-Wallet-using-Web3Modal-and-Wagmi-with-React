@@ -1,14 +1,15 @@
+import { configureChains, createClient, WagmiConfig, useAccount, useContract, useContractRead } from 'wagmi';
 import { EthereumClient, modalConnectors, walletConnectProvider } from '@web3modal/ethereum';
-import { configureChains, createClient, WagmiConfig, useAccount, useContractRead } from 'wagmi';
 import { Web3Button, Web3Modal } from '@web3modal/react';
 import { useWeb3ModalTheme } from "@web3modal/react";
-import { mainnet } from 'wagmi/chains';
 import contractABI from './contract-ABI.json';
+import { mainnet } from 'wagmi/chains';
+import Web3 from 'web3';
 import './App.css';
 
 
 const projectId = "4c21ad73dbf007a0b79ea1af1df300ca";
-const contractAddress = "0x5FA0be692bC49A68510F42A747522006cc49c720"; //"0x735763e06F4632EB0598Ff1cEA0B1D9b9463d857";
+const contractAddress = "0x735763e06F4632EB0598Ff1cEA0B1D9b9463d857";
 
 // 2. Configure wagmi client
 const chains = [mainnet]
@@ -28,21 +29,21 @@ const ethereumClient = new EthereumClient(wagmiClient, chains)
 // 4. Wrap your app with WagmiProvider and add <Web3Modal /> compoennt
 export default function App() {
 
-  // const { data, isLoading, error } = useContractRead({
-  //   address: contractAddress,
-  //   abi: contractABI
-  // })
-
-  // if (isLoading) {
-  //   console.log("Loading...");
-  // }
-  // if (error) {
-  //   console.log(error);
-  // }
-  // console.log("Data: ", data);
-
   const { address, isConnected, isDisconnected } = useAccount();
-  console.log("Use Acc: ", address);
+
+  async function getBalance() {
+    try {
+      await window.web3.currentProvider.enable();
+      const web3 = new Web3(window.web3.currentProvider);
+      let contract = await new web3.eth.Contract(contractABI, contractAddress);
+      let tokenBalance = await contract.methods.balanceOf(address).call();
+      console.log(`This account have ${tokenBalance} NFTs`);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  getBalance();
 
   const { theme, setTheme } = useWeb3ModalTheme();
 
