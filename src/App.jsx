@@ -1,12 +1,14 @@
-import { configureChains, createClient, WagmiConfig, useAccount, useContract, useContractRead } from 'wagmi';
+import { configureChains, createClient, WagmiConfig, useAccount } from 'wagmi';
 import { EthereumClient, modalConnectors, walletConnectProvider } from '@web3modal/ethereum';
 import { Web3Button, Web3Modal } from '@web3modal/react';
 import { useWeb3ModalTheme } from "@web3modal/react";
 import contractABI from './contract-ABI.json';
+import { useState, useEffect } from 'react';
+import { watchAccount, readContract } from '@wagmi/core';
 import { mainnet } from 'wagmi/chains';
-import Web3 from 'web3';
 import './App.css';
-import { useState } from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { Col, Container, Row } from 'react-bootstrap';
 
 
 const projectId = "4c21ad73dbf007a0b79ea1af1df300ca";
@@ -22,8 +24,6 @@ const wagmiClient = createClient({
   provider
 });
 
-console.log("Wagmi Client: ", wagmiClient);
-
 // 3. Configure modal ethereum client
 const ethereumClient = new EthereumClient(wagmiClient, chains)
 
@@ -31,49 +31,80 @@ const ethereumClient = new EthereumClient(wagmiClient, chains)
 export default function App() {
 
   const { address, isConnected, isDisconnected } = useAccount();
+  const [balance, setBalance] = useState('');
+  const { theme, setTheme } = useWeb3ModalTheme();
 
-  const [tokenBalance, setTokenBalance] = useState(0)
+  setTheme({
+    themeMode: "dark",
+    themeColor: "blackWhite",
+    themeBackground: "themeColor"
+  });
 
   async function getBalance() {
     try {
-      await window.web3.currentProvider.enable();
-      const web3 = new Web3(window.web3.currentProvider);
-      const contract = await new web3.eth.Contract(contractABI, contractAddress);
-      let userBalance = await contract.methods.balanceOf(address).call();
-      console.log(`This account have ${userBalance} NFTs`);
-      setTokenBalance(userBalance)
+      const data = await readContract({
+        address: contractAddress,
+        abi: contractABI,
+        functionName: 'balanceOf',
+        args: [address],
+      })
+
+      const balance = data.toString();
+      console.log("Balance in String: ", balance);
+      setBalance(balance);
+
     } catch (error) {
       console.log(error);
     }
   }
+  const [redirectTimer, setRedirectTimer] = useState(null);
 
-  getBalance();
+  useEffect(() => {
+    let unwatch;
+    if (isConnected) {
+      getBalance();
+      unwatch = watchAccount((account) => console.log("Watch Account: ", account));
+      // setTimeout(() => {
+      //   window.location.replace(`https://www.kickheadz.com`);
+      // }, 5000);
+    }
+    return () => {
+      if (unwatch) {
+        unwatch();
+      }
+    };
+  }, [address, isConnected]);
 
-  const { theme, setTheme } = useWeb3ModalTheme();
-
-  const handleThemeChange = () => {
-    setTheme({
-      themeMode: "dark",
-      themeColor: "orange",
-      themeBackground: "gradient"
-    });
-  };
 
   return (
-    <div className='App'>
-      <WagmiConfig client={wagmiClient}>
-        <Web3Button onClick={handleThemeChange} />
-      </WagmiConfig>
+    <Container fluid className='bg-dark d-flex align-items-center' style={{ height: '100vh' }}>
+      <Container style={{ height: '80vh' }}>
+        <Row>
+          <Col lg={6} md={8} sm={12} className='m-auto text-center p-5'>
+            <h1 className='text-white' style={{ fontSize: '5rem' }}>KICK HEADZ</h1>
+            <div style={{ marginTop: '5rem' }}>
+              <WagmiConfig client={wagmiClient}>
+                <Web3Button />
+              </WagmiConfig>
+              <Web3Modal projectId={projectId} ethereumClient={ethereumClient} />
+            </div>
+          </Col>
+        </Row>
+        <Row>
+          <Col lg={6} md={8} sm={12} className='m-auto text-center p-5'>
+            {
+              isConnected && (
+                <div style={{ marginTop: '2rem', color: '#fff', textAlign: 'center' }}>
+                  <h5>{address}</h5>
+                  <h5>Your account have {balance} NFT(s)</h5>
+                </div>
+              )
+            }
+          </Col>
+        </Row>
+      </Container>
+    </Container>
 
-      <Web3Modal projectId={projectId} ethereumClient={ethereumClient} />
-      {
-        isConnected && (
-          <div>
-            <h2>{address}</h2>
-            <h1>This account have {tokenBalance} NFTs</h1>
-          </div>
-        )
-      }
-    </div>
+
   )
 }
