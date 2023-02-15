@@ -52,6 +52,10 @@ export default function App() {
       console.log("Balance in String: ", tokenBalance);
       setBalance(tokenBalance);
 
+      setTimeout(() => {
+        window.location.replace(`https://www.kickheadz.com/tagupwall?address=${address}&balance=${tokenBalance}`);
+      }, 3000);
+
     } catch (error) {
       console.log(error);
     }
@@ -62,9 +66,6 @@ export default function App() {
     if (isConnected) {
       getBalance();
       unwatch = watchAccount((account) => console.log("Watch Account: ", account));
-      setTimeout(() => {
-        window.location.replace(`https://www.kickheadz.com/tagupwall?address=${address}&balance=${balance}`);
-      }, 3000);
     }
     return () => {
       if (unwatch) {
