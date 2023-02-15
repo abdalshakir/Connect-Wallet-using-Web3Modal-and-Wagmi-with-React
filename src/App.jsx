@@ -29,7 +29,7 @@ const ethereumClient = new EthereumClient(wagmiClient, chains)
 // 4. Wrap your app with WagmiProvider and add <Web3Modal /> compoennt
 export default function App() {
 
-  const { address, isConnected, isDisconnected } = useAccount();
+  const { address, isConnected } = useAccount();
   const [balance, setBalance] = useState('');
   const { theme, setTheme } = useWeb3ModalTheme();
 
@@ -48,24 +48,23 @@ export default function App() {
         args: [address],
       })
 
-      const balance = data.toString();
-      console.log("Balance in String: ", balance);
-      setBalance(balance);
+      const tokenBalance = data.toString();
+      console.log("Balance in String: ", tokenBalance);
+      setBalance(tokenBalance);
 
     } catch (error) {
       console.log(error);
     }
   }
-  const [redirectTimer, setRedirectTimer] = useState(null);
 
   useEffect(() => {
     let unwatch;
     if (isConnected) {
       getBalance();
       unwatch = watchAccount((account) => console.log("Watch Account: ", account));
-      // setTimeout(() => {
-      //   window.location.replace(`https://www.kickheadz.com`);
-      // }, 5000);
+      setTimeout(() => {
+        window.location.replace(`https://www.kickheadz.com/tagupwall?address=${address}&balance=${balance}`);
+      }, 3000);
     }
     return () => {
       if (unwatch) {
