@@ -1,10 +1,24 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import Routes from './Routes/Routes'
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import App from "./App";
 
-ReactDOM.render(
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(
   <React.StrictMode>
-    <Routes />
-  </React.StrictMode>,
-  document.getElementById('root')
+    <BrowserRouter>
+      <Routes>
+        <Route
+          exact
+          path="/tagupwall"
+          element={<App url="https://www.kickheadz.com/tagupwall" />}
+        />
+        <Route
+          exact
+          path="/merchandise"
+          element={<App url="https://www.kickheadz.com/merchandise" />}
+        />
+      </Routes>
+    </BrowserRouter>
+  </React.StrictMode>
 )
