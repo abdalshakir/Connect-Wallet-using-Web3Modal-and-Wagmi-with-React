@@ -80,7 +80,7 @@ export default function App() {
       <Container style={{ height: '80vh' }}>
         <Row>
           <Col lg={6} md={8} sm={12} className='m-auto text-center py-5'>
-            <h1 className='text-white' style={{ fontSize: '5vw' }}>KICK HEADZ</h1>
+            <h1 className='text-white' style={{ fontSize: '5rem' }}>KICK HEADZ</h1>
             <div style={{ marginTop: '5rem' }}>
               <WagmiConfig client={wagmiClient}>
                 <Web3Button />
