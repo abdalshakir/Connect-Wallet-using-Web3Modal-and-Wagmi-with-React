@@ -5,16 +5,8 @@ import App from "../App";
 function Routes() {
     return (
         <Router>
-            <Route
-                exact
-                path="/tagupwall"
-                render={(props) => <App {...props} url="https://www.kickheadz.com/tagupwall" />}
-            />
-            <Route
-                exact
-                path="/merchandise"
-                render={(props) => <App {...props} url="https://www.kickheadz.com/merchandise" />}
-            />
+            <Route exact path="/tagupwall" render={(props) => <App {...props} url="https://www.kickheadz.com/tagupwall" />} />
+            <Route exact path="/merchandise" render={(props) => <App {...props} url="https://www.kickheadz.com/merchandise" />} />
         </Router>
     );
 }
